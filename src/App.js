@@ -10,7 +10,7 @@ function App() {
       <div className="App">
         <NavigationBar />
         <Routes>
-          <Route exact path="/" element={<div className="home-background">{/* Home page content */}</div>} />
+          <Route exact path="/"/>
           <Route path="/track-data" element={<TrackData />} />
         </Routes>
       </div>

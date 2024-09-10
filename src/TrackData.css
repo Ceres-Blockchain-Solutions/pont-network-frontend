@@ -36,3 +36,7 @@
   .data-table tr:hover {
     /* background-color: rgba(0, 0, 0, 0.1); Semi-transparent hover effect */
   }
+
+  .different {
+    background-color: red !important;
+  }

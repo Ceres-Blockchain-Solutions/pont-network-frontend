@@ -5,6 +5,7 @@ import { PublicKey, Connection } from '@solana/web3.js';
 import { Program, AnchorProvider, Wallet, BorshCoder } from '@coral-xyz/anchor';
 import pont_network from './pont_network.json'; // Adjust the path to your IDL file
 import {Buffer} from 'buffer';
+import { blake3 } from 'hash-wasm'; // Import BLAKE3 hash function
 
 export class MyWallet {
 
@@ -43,18 +44,31 @@ const program = new Program(pont_network, provider);
 const TrackData = () => {
   const [data, setData] = useState([]);
   const [blockchainFingerprints, setBlockchainFingerprints] = useState([]);
+  const [differences, setDifferences] = useState([]);
+
+  useEffect(() => {
+    const checkDifferences = async () => {
+      const results = {};
+      for (let i = 0; i < data.length; i++) {
+        results[i] = await isDifferent(data[i].ciphertext, i);
+      }
+      setDifferences(results, );
+    };
+    checkDifferences();
+  }, [data, blockchainFingerprints]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/data');
         const result = await response.json();
-        setData(result);
+        
 
         // Fetch fingerprints from Solana blockchain
         const dataAccountAddress = new PublicKey('4vg8N6yWr57zraEM5Y2JNFTWnpNjmMW1jBMewPi2TSAm'); // Replace with your data account public key
         const fingerprints = await getFingerprints(dataAccountAddress);
         setBlockchainFingerprints(fingerprints);
+        setData(result);
         console.log('Fingerprints:', fingerprints);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -87,6 +101,16 @@ const TrackData = () => {
     return `${str.slice(0, 8)}...${str.slice(-8)}`;
   };
 
+  const isDifferent = async (ciphertext, index) => {
+    console.log('ciphertext:', ciphertext);
+    // Convert hex string to byte array
+    const byteArray = Buffer.from(ciphertext, 'hex');
+    const hash = await blake3(byteArray);
+    console.log('hash:', hash);
+    console.log('blockchainFingerprints[index]:', blockchainFingerprints[index]);
+    return hash !== blockchainFingerprints[index];
+  };
+
   return (
     <div className="data-table-container">
       <table className="data-table">
@@ -102,7 +126,7 @@ const TrackData = () => {
         </thead>
         <tbody>
           {data.map((item, index) => (
-            <tr key={index}>
+            <tr key={index} className={differences[index] ? 'different' : ''}>
               <td>{truncate(item.fingerprint)}</td>
               <td>{truncate(item.ciphertext)}</td>
               <td>{truncate(item.tag)}</td>
@@ -113,14 +137,14 @@ const TrackData = () => {
           ))}
         </tbody>
       </table>
-      <div>
+      {/* <div>
         <h3>Blockchain Fingerprints:</h3>
         <ul>
           {blockchainFingerprints.map((fingerprint, index) => (
             <li key={index}>{fingerprint}</li>
           ))}
         </ul>
-      </div>
+      </div> */}
     </div>
   );
 };
