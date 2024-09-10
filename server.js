@@ -22,7 +22,7 @@ app.get('/api/data', async (req, res) => {
     console.error(error);
     res.status(500).send('Error fetching data');
   } finally {
-    await client.close();
+    // await client.close();
   }
 });
 
