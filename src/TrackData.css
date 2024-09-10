@@ -1,0 +1,26 @@
+/* src/TrackData.css */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+  }
+  
+  .data-table th,
+  .data-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .data-table th {
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent header background */
+    color: white;
+  }
+  
+  .data-table tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent row background */
+  }
+  
+  .data-table tr:hover {
+    background-color: rgba(0, 0, 0, 0.1); /* Semi-transparent hover effect */
+  }

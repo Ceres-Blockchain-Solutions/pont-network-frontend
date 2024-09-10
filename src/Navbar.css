@@ -1,0 +1,9 @@
+.navbar-brand,
+.nav-link {
+  font-size: 1.25rem; /* Increase font size */
+}
+
+.nav-link {
+  margin-left: 2rem; /* Add space between menu items */
+  margin-right: 2rem; /* Add space between menu items */
+}
