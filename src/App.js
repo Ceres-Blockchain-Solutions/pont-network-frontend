@@ -1,27 +1,20 @@
 import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import NavigationBar from './Navbar';
 import TrackData from './TrackData';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { clusterApiUrl } from '@solana/web3.js';
-import '@solana/wallet-adapter-react-ui/styles.css';
 
 function App() {
-  const network = WalletAdapterNetwork.Devnet;
-  const endpoint = clusterApiUrl(network);
-  const wallets = [new SolflareWalletAdapter()];
-
   return (
-    <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
-        <div className="App">
-          <NavigationBar />
-          <TrackData />
-        </div>
-      </WalletProvider>
-    </ConnectionProvider>
+    <Router>
+      <div className="App">
+        <NavigationBar />
+        <Routes>
+          <Route exact path="/" element={<div className="home-background">{/* Home page content */}</div>} />
+          <Route path="/track-data" element={<TrackData />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

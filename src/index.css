@@ -23,7 +23,7 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  background-color: rgba(255, 255, 255, 0.5); /* Adjust the alpha value for transparency */
+  background-color: rgba(255, 255, 255, 0.2); /* Adjust the alpha value for transparency */
   height: 106vh;
   display: flex;
   flex-direction: column;

@@ -1,4 +1,3 @@
-// src/TrackData.js
 import React, { useEffect, useState } from 'react';
 import './TrackData.css'; // Ensure the CSS file is imported
 
@@ -17,6 +16,9 @@ const TrackData = () => {
     };
 
     fetchData();
+    const intervalId = setInterval(fetchData, 2000); // Refetch data every 2 seconds
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);
 
   const truncate = (str) => {
@@ -25,7 +27,7 @@ const TrackData = () => {
   };
 
   return (
-    <div style={{ padding: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 5vh)' }}>
+    <div className="data-table-container">
       <table className="data-table">
         <thead>
           <tr>
