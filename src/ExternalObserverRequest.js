@@ -1,0 +1,66 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { encode } from 'bs58';
+import { blake3 } from 'hash-wasm';
+import { x25519 } from '@noble/curves/ed25519';
+import './App.css'; // Import the CSS file
+
+function App() {
+  const [shipAddress, setShipAddress] = useState('AKnL4NNf3DGWZJS6cPknBuEGnVsV4A4m5tgebLHaRSZ9');
+  const { publicKey, signMessage } = useWallet();
+  const [x25519Pk, setX25519Pk] = useState(null);
+
+  const handleSignMessage = async () => {
+    if (!publicKey) {
+      alert('Please connect your wallet first.');
+      return;
+    }
+
+    const message = 'SIGN THIS MESSAGE TO GET SEED FOR25199 KEYPAIR';
+    const encodedMessage = new TextEncoder().encode(message);
+    try {
+      const signature = await signMessage(encodedMessage);
+      const encodedSignature = encode(signature);
+      const seed = await blake3(signature);
+      console.log('Signature hash:', seed);
+
+      console.log('Signature:', encodedSignature);
+      alert('Message signed successfully! Your seed: ' + seed);
+
+      const x25519_sk = x25519.getPublicKey(seed);
+      const x25519_pk = x25519.getPublicKey(x25519_sk);
+      setX25519Pk(x25519_pk);
+    } catch (error) {
+      console.error('Error signing message:', error);
+      alert('Failed to sign message.');
+    }
+  };
+
+  return (
+    <div className="App">
+      <h1>Request to be External Observer</h1>
+      <div className="input-container">
+        <input
+          type="text"
+          placeholder="Enter ship address"
+          value={shipAddress}
+          onChange={(e) => setShipAddress(e.target.value)}
+          className="input-field"
+        />
+      </div>
+      <div className="button-container">
+        <button onClick={handleSignMessage} className="wallet-button">
+          Sign Message
+        </button>
+      </div>
+      {x25519Pk && (
+        <div className="public-key-display">
+          Your X25519 Public key is: <span className="public-key">{x25519Pk}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;

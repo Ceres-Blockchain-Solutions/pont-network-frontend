@@ -31,3 +31,37 @@ body::before {
   display: flex;
   flex-direction: column;
 }
+
+.input-container {
+  margin-bottom: 20px; /* Add space between the text fields and the button */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the input field */
+}
+
+.input-field {
+  margin-top: 150px;
+  padding: 10px; /* Make the field bigger */
+  width: 100%; /* Make the field take full width */
+  max-width: 600px; /* Limit the maximum width */
+  box-sizing: border-box; /* Include padding in the element's total width and height */
+}
+
+.button-container {
+  display: flex;
+  justify-content: center; /* Center the button */
+}
+
+.wallet-button {
+  padding: 10px 20px; /* Apply same padding as the connect wallet button */
+  background-color: #007bff; /* Same background color */
+  color: white; /* Same text color */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Same border radius */
+  cursor: pointer; /* Pointer cursor on hover */
+  width: 300px;
+}
+
+.wallet-button:hover {
+  background-color: #0056b3; /* Darker background on hover */
+}
