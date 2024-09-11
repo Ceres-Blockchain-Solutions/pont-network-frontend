@@ -15,8 +15,8 @@ const DataDetails = () => {
     useEffect(() => {
         try {
             const { ciphertext, tag, iv } = item;
-            const keyUint32 = new Uint32Array(8).fill(5);
-            const key = new Uint8Array(keyUint32.buffer);
+            const key = new Uint8Array(32).fill(5);
+            // const key = new Uint8Array(keyUint32.buffer);
             console.log("keyBytes len:", key);
 
             let decrypted = decrypt(ciphertext, tag, iv, key);
