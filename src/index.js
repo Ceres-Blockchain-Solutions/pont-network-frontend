@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+import process from 'process';
 
 const wallets = [
   new SolflareWalletAdapter(),

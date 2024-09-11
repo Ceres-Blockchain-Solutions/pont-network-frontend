@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import NavigationBar from './Navbar';
 import TrackData from './TrackData';
+import DataDetails from './DataDetails'; // Import the new component
+import process from 'process';
 
 function App() {
   return (
@@ -10,8 +12,9 @@ function App() {
       <div className="App">
         <NavigationBar />
         <Routes>
-          <Route exact path="/"/>
+          <Route exact path="/" />
           <Route path="/track-data" element={<TrackData />} />
+          <Route path="/data-details/:index" element={<DataDetails />} /> {/* New route */}
         </Routes>
       </div>
     </Router>

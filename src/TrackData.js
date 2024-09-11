@@ -6,6 +6,9 @@ import { Program, AnchorProvider, Wallet, BorshCoder } from '@coral-xyz/anchor';
 import pont_network from './pont_network.json'; // Adjust the path to your IDL file
 import {Buffer} from 'buffer';
 import { blake3 } from 'hash-wasm'; // Import BLAKE3 hash function
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import crypto from 'crypto-browserify';
+import process from 'process';
 
 export class MyWallet {
 
@@ -41,10 +44,33 @@ const provider = new AnchorProvider(connection, wallet)
 // const programId = new PublicKey('6gdTocGpug1w7cgV1MQXyJDDGPtw7JHM5aNjKB8wY8V6'); // Replace with your program ID
 const program = new Program(pont_network, provider);
 
+// Encrypt data AES-256-GCM
+export const encrypt = (plaintext, key, iv) => {
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+  let ciphertext = cipher.update(plaintext, 'utf8', 'hex');
+  ciphertext += cipher.final('hex');
+  const tag = cipher.getAuthTag().toString('hex'); // Get the authentication tag
+  return {
+    ciphertext,
+    tag,
+    iv
+  };
+};
+
+// Decrypt data AES-256-GCM
+export const decrypt = (ciphertext, tag, iv, key) => {
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(iv, 'hex'));
+  decipher.setAuthTag(Buffer.from(tag, 'hex')); // Set the authentication tag
+  let decrypted = decipher.update(ciphertext, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
+};
+
 const TrackData = () => {
   const [data, setData] = useState([]);
   const [blockchainFingerprints, setBlockchainFingerprints] = useState([]);
   const [differences, setDifferences] = useState([]);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const checkDifferences = async () => {
@@ -111,42 +137,38 @@ const TrackData = () => {
     return hash !== blockchainFingerprints[index];
   };
 
-  return (
-    <div className="data-table-container">
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>Fingerprint</th>
-            <th>Ciphertext</th>
-            <th>Tag</th>
-            <th>IV</th>
-            <th>Timestamp (Unix)</th>
-            <th>Timestamp (Date)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr key={index} className={differences[index] ? 'different' : ''}>
-              <td>{truncate(item.fingerprint)}</td>
-              <td>{truncate(item.ciphertext)}</td>
-              <td>{truncate(item.tag)}</td>
-              <td>{truncate(item.iv)}</td>
-              <td>{item.ciphertext_timestamp_unix}</td>
-              <td>{new Date(item.ciphertext_timestamp_date).toLocaleString()}</td>
+    const handleRowClick = (item, index) => {
+      navigate(`/data-details/${index}`, { state: { item } }); // Pass data to DataDetails
+    };
+  
+    return (
+      <div className="data-table-container">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Fingerprint</th>
+              <th>Ciphertext</th>
+              <th>Tag</th>
+              <th>IV</th>
+              <th>Timestamp (Unix)</th>
+              <th>Timestamp (Date)</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {/* <div>
-        <h3>Blockchain Fingerprints:</h3>
-        <ul>
-          {blockchainFingerprints.map((fingerprint, index) => (
-            <li key={index}>{fingerprint}</li>
-          ))}
-        </ul>
-      </div> */}
-    </div>
-  );
-};
+          </thead>
+          <tbody>
+            {data.map((item, index) => (
+              <tr key={index} className={differences[index] ? 'different' : ''} onClick={() => handleRowClick(item, index)}>
+                <td>{truncate(item.fingerprint)}</td>
+                <td>{truncate(item.ciphertext)}</td>
+                <td>{truncate(item.tag)}</td>
+                <td>{truncate(item.iv)}</td>
+                <td>{item.ciphertext_timestamp_unix}</td>
+                <td>{new Date(item.ciphertext_timestamp_date).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
 export default TrackData;
