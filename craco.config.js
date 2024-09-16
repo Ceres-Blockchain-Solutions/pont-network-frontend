@@ -21,6 +21,9 @@ module.exports = {
         url: require.resolve('url'),
         buffer: require.resolve('buffer'),  // Add buffer polyfill here
         process: require.resolve('process/browser'),
+        path: require.resolve("path-browserify"),
+        os: require.resolve("os-browserify/browser"),
+        fs: false,
       };
 
       webpackConfig.plugins = (webpackConfig.plugins || []).concat([

@@ -14,6 +14,7 @@ function NavigationBar() {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mx-auto">
           <Nav.Link as={Link} to="/">Home</Nav.Link>
+          <Nav.Link as={Link} to="/ship-accounts">Ship Accounts</Nav.Link>
           <Nav.Link as={Link} to="/track-data">Track Data</Nav.Link>
           <Nav.Link as={Link} to="/ship-management">Ship Management</Nav.Link>
           <Nav.Link as={Link} to="/external-observer-request">External Observer Request</Nav.Link>

@@ -6,6 +6,8 @@ import TrackData from './TrackData';
 import DataDetails from './DataDetails'; // Import the new component
 import process from 'process';
 import ExternalObserverRequest from "./ExternalObserverRequest"
+import ShipAccounts from './ShipAccounts';
+
 
 function App() {
   return (
@@ -16,7 +18,8 @@ function App() {
           <Route exact path="/" />
           <Route path="/track-data" element={<TrackData />} />
           <Route path="/external-observer-request" element={<ExternalObserverRequest />} />
-          <Route path="/data-details/:index" element={<DataDetails />} /> {/* New route */}
+          <Route path="/data-details/:index" element={<DataDetails />} />
+          <Route path="/ship-accounts" element={<ShipAccounts />} />
         </Routes>
       </div>
     </Router>

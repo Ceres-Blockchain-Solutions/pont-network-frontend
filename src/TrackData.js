@@ -3,12 +3,13 @@ import * as anchor from "@coral-xyz/anchor";
 import './TrackData.css'; // Ensure the CSS file is imported
 import { PublicKey, Connection } from '@solana/web3.js';
 import { Program, AnchorProvider, Wallet, BorshCoder } from '@coral-xyz/anchor';
-import pont_network from './pont_network.json'; // Adjust the path to your IDL file
+import pont_network from './idl/pont_network.json'; // Adjust the path to your IDL file
 import {Buffer} from 'buffer';
 import { blake3 } from 'hash-wasm'; // Import BLAKE3 hash function
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import crypto from 'crypto-browserify';
 import process from 'process';
+import { useSolana } from './contexts/SolanaContext';
 
 export class MyWallet {
 
@@ -33,16 +34,15 @@ export class MyWallet {
   }
 }
 
-const connection = new Connection('http://127.0.0.1:8899', 'confirmed');
+// const connection = new Connection('http://127.0.0.1:8899', 'confirmed');
 
-const eo1 = anchor.web3.Keypair.fromSeed(new Uint8Array(32).fill(3));
+// const eo1 = anchor.web3.Keypair.fromSeed(new Uint8Array(32).fill(3));
 
-const wallet = new MyWallet(eo1);
-const coder = new BorshCoder(pont_network);
+// const wallet = new MyWallet(eo1);
+// const coder = new BorshCoder(pont_network);
 
-const provider = new AnchorProvider(connection, wallet)
-// const programId = new PublicKey('6gdTocGpug1w7cgV1MQXyJDDGPtw7JHM5aNjKB8wY8V6'); // Replace with your program ID
-const program = new Program(pont_network, provider);
+// const provider = new AnchorProvider(connection, wallet)
+// const program = new Program(pont_network, provider);
 
 // Encrypt data AES-256-GCM
 export const encrypt = (plaintext, key, iv) => {
@@ -70,7 +70,8 @@ const TrackData = () => {
   const [data, setData] = useState([]);
   const [blockchainFingerprints, setBlockchainFingerprints] = useState([]);
   const [differences, setDifferences] = useState([]);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
+  const { program } = useSolana();
 
   useEffect(() => {
     const checkDifferences = async () => {

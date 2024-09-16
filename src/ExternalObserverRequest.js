@@ -5,17 +5,27 @@ import { encode } from 'bs58';
 import { blake3 } from 'hash-wasm';
 import { x25519 } from '@noble/curves/ed25519';
 import './App.css'; // Import the CSS file
+import { useSolana } from './contexts/SolanaContext';
+import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import * as anchor from "@coral-xyz/anchor";
 
 function App() {
   const [shipAddress, setShipAddress] = useState('AKnL4NNf3DGWZJS6cPknBuEGnVsV4A4m5tgebLHaRSZ9');
   const { publicKey, signMessage } = useWallet();
   const [x25519Pk, setX25519Pk] = useState(null);
+  const { program, selfPublicAddress, selfKeypair } = useSolana();
 
-  const handleSignMessage = async () => {
+  const handleRequestExternalObserver = async () => {
     if (!publicKey) {
       alert('Please connect your wallet first.');
       return;
     }
+
+    
+    if (selfKeypair) {
+      console.log('selfKeypair public key:', selfKeypair);
+    }
+    
 
     const message = 'SIGN THIS MESSAGE TO GET SEED FOR25199 KEYPAIR';
     const encodedMessage = new TextEncoder().encode(message);
@@ -23,14 +33,48 @@ function App() {
       const signature = await signMessage(encodedMessage);
       const encodedSignature = encode(signature);
       const seed = await blake3(signature);
-      console.log('Signature hash:', seed);
-
       console.log('Signature:', encodedSignature);
+      console.log('Signature hash:', seed);
       alert('Message signed successfully! Your seed: ' + seed);
 
       const x25519_sk = x25519.getPublicKey(seed);
       const x25519_pk = x25519.getPublicKey(x25519_sk);
       setX25519Pk(x25519_pk);
+
+      // TODO: mozda ne mora da se pravi PublicKey objekat od shipAddress
+      const [shipAccountAddress, bump1] = PublicKey.findProgramAddressSync(
+        [Buffer.from("ship_account"), new PublicKey(shipAddress).toBuffer()],
+        program.programId
+      );
+
+      const shipAccount = await program.account.shipAccount.fetch(shipAccountAddress);
+
+      console.log('Ship account:', shipAccount);
+
+      const [latestDataAccount, bump2] = PublicKey.findProgramAddressSync(
+				[Buffer.from("data_account"), new PublicKey(shipAddress).toBuffer(), new anchor.BN(shipAccount.dataAccounts.length - 1, "le").toArrayLike(Buffer, "le", 8)],
+				program.programId
+			);
+	
+			const [externalObserversAccount, bump3] = PublicKey.findProgramAddressSync(
+				[Buffer.from("external_observers_account"), latestDataAccount.toBuffer()],
+				program.programId
+			);
+
+      // Call the externalObserverRequest instruction with x25519_pk
+      await program.methods
+      .externalObserverRequest(new PublicKey(x25519_pk))
+      .accounts({
+        dataAccount: latestDataAccount,
+				externalObserversAccount,
+				externalObserver: selfKeypair.publicKey,
+				systemProgram: SystemProgram.programId,
+      })
+      .signers([selfKeypair])
+      .rpc();
+
+      alert('Request succesful.');
+      
     } catch (error) {
       console.error('Error signing message:', error);
       alert('Failed to sign message.');
@@ -50,8 +94,8 @@ function App() {
         />
       </div>
       <div className="button-container">
-        <button onClick={handleSignMessage} className="wallet-button">
-          Sign Message
+        <button onClick={handleRequestExternalObserver} className="wallet-button">
+          Request to be External Observer
         </button>
       </div>
       {x25519Pk && (

@@ -6,7 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
-import process from 'process';
+import { SolanaProvider } from './contexts/SolanaContext';
+import { Keypair } from '@solana/web3.js';
 
 const wallets = [
   new SolflareWalletAdapter(),
@@ -21,7 +22,9 @@ root.render(
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <App />
+          <SolanaProvider>
+            <App />
+          </SolanaProvider>
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
